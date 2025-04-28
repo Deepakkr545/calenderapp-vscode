@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive Colorful Calendar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe, #f0fdf4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .calendar {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      max-width: 400px;
+      width: 100%;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    select, button {
+      padding: 5px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f0f9ff;
+      cursor: pointer;
+    }
+    button:hover, select:hover {
+      background-color: #bae6fd;
+    }
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .day-name {
+      font-weight: bold;
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+    }
+    .day {
+      text-align: center;
+      padding: 10px 0;
+      border-radius: 10px;
+      background-color: #e0f2fe;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .day:hover {
+      background-color: #38bdf8;
+      color: white;
+      transform: scale(1.05);
+    }
+    .today {
+      background-color: #60a5fa;
+      color: white;
+      font-weight: bold;
+    }
+    .weekend {
+      background-color: #fcd34d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="calendar">
+  <div class="controls">
+    <button onclick="prevMonth()">◀</button>
+    <select id="monthSelect" onchange="generateCalendar()"></select>
+    <select id="yearSelect" onchange="generateCalendar()"></select>
+    <button onclick="nextMonth()">▶</button>
+  </div>
+  <div class="days" id="calendarDays">
+    <!-- Calendar Days will be inserted here -->
+  </div>
+</div>
+
+<script>
+  const calendarDays = document.getElementById('calendarDays');
+  const monthSelect = document.getElementById('monthSelect');
+  const yearSelect = document.getElementById('yearSelect');
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const current = new Date();
+  let selectedMonth = current.getMonth();
+  let selectedYear = current.getFullYear();
+
+  // Fill month dropdown
+  months.forEach((m, idx) => {
+    const opt = document.createElement('option');
+    opt.value = idx;
+    opt.textContent = m;
+    monthSelect.appendChild(opt);
+  });
+
+  // Fill year dropdown (from 1980 to 2080)
+  for (let y = 1980; y <= 2080; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    yearSelect.appendChild(opt);
+  }
+
+  monthSelect.value = selectedMonth;
+  yearSelect.value = selectedYear;
+
+  function generateCalendar() {
+    calendarDays.innerHTML = '';
+
+    selectedMonth = parseInt(monthSelect.value);
+    selectedYear = parseInt(yearSelect.value);
+
+    const firstDay = new Date(selectedYear, selectedMonth, 1).getDay();
+    const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    // Day names row
+    for (let d of dayNames) {
+      const dayNameDiv = document.createElement('div');
+      dayNameDiv.textContent = d;
+      dayNameDiv.classList.add('day-name');
+      calendarDays.appendChild(dayNameDiv);
+    }
+
+    // Empty slots before the 1st day
+    for (let i = 0; i < firstDay; i++) {
+      const blank = document.createElement('div');
+      calendarDays.appendChild(blank);
+    }
+
+    // Actual days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.classList.add('day');
+      dayDiv.textContent = i;
+
+      const thisDate = new Date(selectedYear, selectedMonth, i);
+
+      if (thisDate.getDay() === 0 || thisDate.getDay() === 6) {
+        dayDiv.classList.add('weekend');
+      }
+
+      if (
+        i === current.getDate() &&
+        selectedMonth === current.getMonth() &&
+        selectedYear === current.getFullYear()
+      ) {
+        dayDiv.classList.add('today');
+      }
+
+      calendarDays.appendChild(dayDiv);
+    }
+  }
+
+  function prevMonth() {
+    selectedMonth--;
+    if (selectedMonth < 0) {
+      selectedMonth = 11;
+      selectedYear--;
+    }
+    monthSelect.value = selectedMonth;
+    yearSelect.value = selectedYear;
+    generateCalendar();
+  }
+
+  function nextMonth() {
+    selectedMonth++;a
+    if (selectedMonth > 11) {
+      selectedMonth = 0;
+      selectedYear++;
+    }
+    monthSelect.value = selectedMonth;
+    yearSelect.value = selectedYear;
+    generateCalendar();
+  }
+
+  generateCalendar();
+</script>
+
+</body>
+</html>
